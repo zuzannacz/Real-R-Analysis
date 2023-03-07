@@ -1,7 +1,7 @@
 ---
 title: 'Projekt zaliczeniowy - Metody analizy danych finansowych/Wprowadzenie do R
   i Python  '
-author: "Zuzanna Czerny (177406)"
+author: "Zuzanna Czerny"
 output:
   html_document: default
   pdf_document: default
