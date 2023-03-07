@@ -12,35 +12,35 @@ daneZRoku <- list()
 df<-list.files(path,pattern=".csv")
 
 obliczWspolczynniki <- function(daneZPliku){
-  #wspó³czynnik zmiennoœci
+  #wspÃ³Å‚czynnik zmiennoÅ›ci
   srednia <- colMeans(daneZPliku)
   odch.stand. <- sapply(daneZPliku,sd)
   vs<-odch.stand./srednia
   
-  #eliminacja zmiennych, dla których vs<10%
+  #eliminacja zmiennych, dla ktÃ³rych vs<10%
   daneZPliku<-subset(daneZPliku,,vs>0.1)
   
   #obliczanie macierzy korelacji
   korelacja<-cor(daneZPliku,method="pearson")
   
-  #dyskryminacja zmiennych przy u¿yciu pakietu 'caret'
+  #dyskryminacja zmiennych przy uÅ¼yciu pakietu 'caret'
   dyskryminacja_korelacja<-findCorrelation(korelacja,cutoff=0.81,exact=TRUE)
   dyskryminacja_korelacja<-sort(dyskryminacja_korelacja)
   macierz_zredukowana<-daneZPliku[-c(dyskryminacja_korelacja)]
   
   #standaryzacja
   macierz_standaryzowana<-scale(macierz_zredukowana,center=TRUE,scale=TRUE)
-  macierz_standaryzowana<-as.data.frame(macierz_standaryzowana) #musi byæ zmienione na data frame, bo potem nie da siê u¿yæ operatora $ w poni¿szych pêtlach if
+  macierz_standaryzowana<-as.data.frame(macierz_standaryzowana) #musi byÄ‡ zmienione na data frame, bo potem nie da siÄ™ uÅ¼yÄ‡ operatora $ w poniÅ¼szych pÄ™tlach if
   
   #zamiana nominant i destymulant w stymulanty
-  #nie mamy nominant, ale mamy destymulanty (x4, x6, x7, x8, x9, x10) - zamiana destymulant odbywa siê przez pomno¿enie ka¿dej zmiennej przez -1
+  #nie mamy nominant, ale mamy destymulanty (x4, x6, x7, x8, x9, x10) - zamiana destymulant odbywa siÄ™ przez pomnoÅ¼enie kaÅ¼dej zmiennej przez -1
   #pusty wektor
   d<-c()
-  # stworzenie wektora do zamiany destymulant w stymulanty, w zale¿noœci od tego, które zmienne pozosta³y w modelu po ich dyskryminacji wg kryterium wspó³czynnika zmiennoœci
+  # stworzenie wektora do zamiany destymulant w stymulanty, w zaleÅ¼noÅ›ci od tego, ktÃ³re zmienne pozostaÅ‚y w modelu po ich dyskryminacji wg kryterium wspÃ³Å‚czynnika zmiennoÅ›ci
   
   if ((is.null(macierz_standaryzowana$x1))==FALSE){
     d<-append(d,1)
-    # append - dodaj do wektora d liczbê 1. Wektor d to wektor pusty
+    # append - dodaj do wektora d liczbÄ™ 1. Wektor d to wektor pusty
   } 
   
   if ((is.null(macierz_standaryzowana$x2))==FALSE){
@@ -74,11 +74,11 @@ obliczWspolczynniki <- function(daneZPliku){
   macierz_zamiana<-sweep(macierz_standaryzowana,2,d,'*') 
   
     #wyznaczenie miary rozwoju 
-  # 1. wyznaczenie min i max dla ka¿dej zmiennej (kolumny)
+  # 1. wyznaczenie min i max dla kaÅ¼dej zmiennej (kolumny)
   x<-apply(macierz_zamiana,2,min) #min
   y<-apply(macierz_zamiana,2,max) #max
   
-  #2. pi = zsumowane wartoœci dla ka¿dego wiersza i dla min i max
+  #2. pi = zsumowane wartoÅ›ci dla kaÅ¼dego wiersza i dla min i max
   z<-rowSums(macierz_zamiana,na.rm=FALSE)
   x<-sum(x)
   y<-sum(y)
@@ -86,7 +86,7 @@ obliczWspolczynniki <- function(daneZPliku){
   #stworzenie mi -> mi= (pi-x)/(y-x)
   mi<-(z-x)/(y-x)
   miary_rozwoju<-data.frame(mi)
-  rownames(miary_rozwoju)<-(c("Wêgry","Polska","Slowacja","Czechy","Francja","Holandia","Dania","Norwegia"))
+  rownames(miary_rozwoju)<-(c("WÄ™gry","Polska","Slowacja","Czechy","Francja","Holandia","Dania","Norwegia"))
   
   print(miary_rozwoju)
 
