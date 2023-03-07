@@ -1,0 +1,258 @@
+---
+title: 'Projekt zaliczeniowy - Metody analizy danych finansowych/Wprowadzenie do R
+  i Python  '
+author: "Zuzanna Czerny (177406)"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+# [Cel przeprowadzenia badania]{style="font-family:Calibri"}
+
+------------------------------------------------------------------------
+
+Przeprowadzone badanie miało na celu dokonanie oceny rynku nieruchmości w ośmiu wybranych krajach Europy na przestrzeni ostatnich 10 lat. Wyniki są wypadkową poziomu standardu mieszkaniowego, dostępności mieszkaniowej oraz
+sytuacji gospodarczej badanych krajów. Pokazują w którym z wybranych krajów sytuacja mieszkaniowa powinna ulec poprawie.
+
+# [Założenia]{style="font-family:Calibri"}
+
+------------------------------------------------------------------------
+
+Badaniu poddano grupę ośmiu krajów, do której należą: Węgry, Polska, Słowacja, Czechy, Francja, Holandia, Dania i Norwegia. Zebrano wartości zmiennych w dwuletnich odstępach czasowych, zatem dla roku 2012, 2014, 2016, 2018 i 2020. Jako wartość progową współczynnika zmienności przyjęto 10%. Natomiast w przypadku korelacji założono, że wartość powyżej której zmienne są eliminowane to 0,81.
+
+# [Dobór zmiennych]{style="font-family:Calibri"}
+
+------------------------------------------------------------------------
+
+Wybrane cechy opisują sytuację ekonomiczno -- gospodarczą oraz rynki nieruchomości w wybranych krajach. Zmienne prezentują w szczególności jak kształtuje się standard mieszkaniowy oraz warunki życia osób zamieszkujących nieruchomości mieszkaniowe w analizowanych krajach od 2012 roku. W Tabeli 1 zaprezentowano wybrane potencjalne zmienne oraz ich charakter. Wybrane cechy mogą przyjmować charakter stymulanty, gdy wzrastające wartości danej zmiennej są zjawiskiem pożądanym. Odwrotnie zachowują się destymulanty -- rosnące wartości świadczą o spadku poziomu danego zjawiska. Z kolei dla nominant wyznacza się przedziały wartości pożądanych, a wszelkie odchylenia od wyznaczonego przedziału są uważane za niewskazane
+
+**Tabela 1: Potencjalne zmienne i ich charakter**
+
+|     | Nazwa potencjalnej zmiennej                                                                                                                                                  | Charakter    |
+|:------------------|:---------------------------------|:------------------|
+| X1  | PKB per capita                                                                                                                                                               | Stymulanta   |
+| X2  | Zmiana liczby ludności                                                                                                                                                       | Stymulanta   |
+| X3  | Odsetek społeczeństwa posiadający mieszkania własnościowe                                                                                                                    | Stymulanta   |
+| X4  | Wskaźnik ceny zakupu mieszkania do dochodu rozporządzalnego przypadającego na 1 osobę                                                                                        | Destymulanta |
+| X5  | Wskaźnik ceny zakupu mieszkania do opłat wymagalnych z tytułu najmu                                                                                                          | Stymulanta   |
+| X6  | Wskaźnik przeludnienia                                                                                                                                                       | Destymulanta |
+| X7  | Wskaźnik przeciążenia kosztami związanymi z utrzymaniem nieruchomości mieszkaniowej                                                                                          | Destymulanta |
+| X8  | Przeciętna liczba pomieszczeń przypadająca na 1 osobę                                                                                                                        | Stymulanta   |
+| X9  | Odsetek populacji nie posiadający dostępu do wanny, prysznica, ani spłukiwanej toalety w obrębie zamieszkiwanej nieruchomości mieszkaniowej                                  | Destymulanta |
+| X10 | Odsetek populacji zamieszkujący nieruchomość mieszkaniową o przeciekającym dachu, zawilgoconych ścianach, podłogach, fundamentach oraz zgniłych podłogach i ramach okiennych | Destymulanta |
+
+Wartości przedstawionych potencjalnych cech diagnostycznych zostały pozyskane z Eurostatu (X1, X2, X3, X6, X7, X8, X9, X10) i OECD (X4, X5).
+
+# [Metodologia]{style="font-family:Calibri"}
+
+------------------------------------------------------------------------
+
+W celu scharakteryzowania zjawiska, na które wpływa wiele zmiennych wybrana została metoda sum standaryzowanych. Jest jedną z metod porządkowania liniowego, należących do licznych podejść wielowymiarowej analizy porównawczej. Istnieje również wiele innych sposobów na obliczenie syntetycznego wskaźnika odzwierciedlającego poziom zjawiska złożonego - np. taksonomiczna miara rozwoju Hellwiga. Przed zastosowaniem wybranej metody dokonano dyskryminacji zmiennych, dobranych uprzednio na podstawie kryterium merytorycznego.
+
+Pierwszym krokiem było obliczenie średniej, odchylenia standarowego oraz współczynnika zmienności w poszczególnych latach dla wybranych zmiennych.Do eliminacji potencjalnych zmiennych w pierwszej kolejności zastosowano kryterium współczynnika zmienności. Zgodnie z założeniami zmienne, których współczynnik zmienności był niższy niż przyjęta wartość zostały na tym etapie wykluczone.
+
+Następnie dla pozostałych zmiennych wyznaczono macierz korelacji. Zmienne, których zależności z innymi były bardzo silne oraz wyraźnie odstawały od poziomu korelacji pozostałych cech powinny zostały wyeliminowane. Wysoka zależność między zmiennymi świadczy o powielaniu przez nie identycznych informacji.
+
+Zastosowana metoda wymaga dokonania standaryzacji, aby zmienne stały się porównywalne. Standaryzację przeprowadza się dzieląc różnicę wartości i -- tego obiektu danej zmiennej i jej średniej przez jej odchylenie standardowe, zgodnie z poniższym wzorem.
+
+$$
+z_{ij}=\frac{x_{ij} - \overline{x}_{j}}{s_{i}}
+$$
+
+gdzie:
+
+$x_{ij}$ - wartość i - tego obiektu j - tej zmiennej,
+
+$\overline{x}_{j}$ - średnia j - tej zmiennej
+
+$s_{i}$ - odchylenie standardowe j - tej zmiennej.
+  
+Metoda zakłada również, iż wszystkie zmienne muszą mieć charakter stymulanty. Należy zatem dokonać zamiany destymulant i nominant. W przypadku destymulant uprzednio wystandaryzowane wartości powinny zostać pomnożone przez (-1). Jeśli zmienne mają charakter nominant, należy postępować zgodnie z poniższym wzorem:
+
+$$
+z_{i j}=\left\{\begin{array}{c}
+1, \text { dla } x_{i j}=N_{j} \\
+\frac{-1}{x_{i j}-N_{j}-1}, \text { dla } x_{i j}<N_{j},(\mathrm{i}=1,2, \ldots, \mathrm{n}) \\
+\frac{1}{x_{i j}-N_{j}+1}, \text { dla } x_{i j}>\mathrm{N}_{\mathrm{j}}
+\end{array}\right.
+$$ gdzie:
+
+$N_{ij}$ - wartość nominalna j -- tej zmiennej (nominanty),
+
+${x}_{ij}$ - i -- ty obiekt j -- tej zmiennej (nominanty),
+
+$z_{ij}$ -- i -- ty obiekt j -- tej zmiennej po dokonaniu zamiany nominanty w stymulantę.
+
+Na tak przygotowanym zbiorze zmiennych można zastosować metodę sum standaryzowanych. W pierwszym kroku metody należy obliczyć sumę zmiennych dla każdego obiektu, zgodnie z wzorem:
+
+$$
+p_{i}=\sum_{j=1}^{m} z_{i j} \mid
+$$
+
+Następnie dla każdego z obiektów oblicza się tzw. miarę rozwoju, w oparciu o wzór :
+
+$$
+m_{i}=\frac{p_{i} - {x}_{p-o}}{p_{0}-{p_{-0}}}
+$$ gdzie:
+
+-   $$p_{0}=\sum_{j=1}^{m} z_{0 j} \mid$$
+
+-   $$p_{-0}=\sum_{j=1}^{m} z_{-0 j} \mid$$
+
+a wartości ${z}_{0j}$ i ${z}_{-0j}$ są wartościami zmiennych dla obiektów abstrakcyjnych, stosownie wzorca oraz antywzorca, wyznaczonych tak jak następuje:
+
+-   $$z_{0 j}=\max _{i} z_{i j}$$
+
+-   $$z_{-0 j}=\min _{i} z_{i j}$$
+
+Ze względu na to, iż wszystkie zmienne mają charakter stymulant, już po obliczeniu sumy zmiennych dla każdego obiektu w pierwszym kroku możliwe jest ich uporządkowanie od najlepszego do najgorszego. Wyznaczenie miar rozwoju w drugim kroku tej metody pozwala dodatkowo na unormowanie tych wartości tak, że mieszczą się w przedziale [0;1], w tym miara dla wzorca wynosi 1, a dla antywzorca 0.
+
+# [Obliczenia w R]{style="font-family:Calibri"}
+
+Pierwszym krokiem w celu dokonania obliczeń było załadowanie potrzebnych pakietów: 
+
+```{r}
+library(caret)  
+library(stats) 
+library(utils)
+```
+
+Następnie w środowisku R zdefiniowano funkcję *obliczWspółczynniki*, za pomoca której obliczano kolejne kroki opisane w teoretycznym opisie metody. Było to zatem obliczenie średniej (*colMeans*), odchylenia standardowego (*sapply*) i współćzynnika zmienności, a następnie odrzucenie zmiennych o współczynniku zmienności mniejszym niż 10%. Następnie użyto funkcji *findCorrelation* z pakietu *caret*, aby dokonać eliminacji wysoko skorelowanych zmiennych. Kolejno zestandaryzowano pozostałe w modelu zmienne (*scale*). Następnie stworzono kilka pętli, których zadaniem było stworzenie wektora, za pomocą którego dokonano zamiany destymulant w stymulanty, w zależności od tego, które ze zmiennych wyeliminowano ze względu na wysoki współczynnnik korelacji. W ostatnim kroku obliczono miarę rozwoju, której zwracanie ma za zadanie zdefiniowana funkcja.
+
+```{r}
+obliczWspolczynniki <- function(daneZPliku){
+
+srednia <- colMeans(daneZPliku)
+odch.stand. <- sapply(daneZPliku,sd)
+vs<-odch.stand./srednia
+
+daneZPliku<-subset(daneZPliku,,vs>0.1)
+
+korelacja<-cor(daneZPliku,method="pearson")
+dyskryminacja_korelacja<-findCorrelation(korelacja,cutoff=0.81,exact=TRUE)
+dyskryminacja_korelacja<-sort(dyskryminacja_korelacja)
+macierz_zredukowana<-daneZPliku[-c(dyskryminacja_korelacja)]
+
+macierz_standaryzowana<-scale(macierz_zredukowana,center=TRUE,scale=TRUE)
+macierz_standaryzowana<-as.data.frame(macierz_standaryzowana)
+
+d<-c()
+if ((is.null(macierz_standaryzowana$x1))==FALSE){
+d<-append(d,1)
+} 
+if ((is.null(macierz_standaryzowana$x2))==FALSE){
+d<-append(d,1)
+}
+if ((is.null(macierz_standaryzowana$x3))==FALSE){
+d<-append(d,1)
+}
+if ((is.null(macierz_standaryzowana$x4))==FALSE){
+d<-append(d,-1)
+}
+if ((is.null(macierz_standaryzowana$x5))==FALSE){
+d<-append(d,1)
+}
+if ((is.null(macierz_standaryzowana$x6))==FALSE){
+d<-append(d,-1)
+}
+if ((is.null(macierz_standaryzowana$x7))==FALSE){
+d<-append(d,-1)
+}
+if ((is.null(macierz_standaryzowana$x8))==FALSE){
+d<-append(d,1)
+}
+if ((is.null(macierz_standaryzowana$x9))==FALSE){
+d<-append(d,-1)
+}
+if ((is.null(macierz_standaryzowana$x10))==FALSE){
+d<-append(d,-1)
+}
+macierz_zamiana<-sweep(macierz_standaryzowana,2,d,'*') 
+
+x<-apply(macierz_zamiana,2,min)
+y<-apply(macierz_zamiana,2,max)
+z<-rowSums(macierz_zamiana,na.rm=FALSE)
+x<-sum(x)
+y<-sum(y)
+mi<-(z-x)/(y-x)
+miary_rozwoju<-data.frame(mi)
+}
+```
+
+Pliki z danymi mają format *csv*. Należy więc ustalić domyślną ścieżkę do plików na urządzeniu użytkownika przy pomocy pokazującego się okna wyboru, aby program mógł załdować z danej lokalizacji pliki do obliczeń.
+
+```{r}
+workdir=choose.dir()
+setwd(workdir)
+path<-file.path(getwd())
+sciezkiDoPliku <- list(plik1 ="2012.csv", plik2 = "2014.csv", plik3 = "2016.csv", plik4="2018.csv", plik5="2020.csv")
+daneZRoku <- list()
+df<-list.files(path,pattern=".csv")
+```
+
+Na końcu stworzoną funkcję przypisano do listy plików *danezRoku* i zapętlono, aby funkcja została zastosowana dla wszystkich 5 plików. 
+
+```{r}
+for (i in 1:length(sciezkiDoPliku)) {
+rok<-read.csv2(sciezkiDoPliku[[i]],header =TRUE,sep=";",,dec=",")
+daneZRoku[[length(daneZRoku) + 1]] <- obliczWspolczynniki(rok)
+}
+```
+
+
+# [Wyniki badania]{style="font-family:Calibri"}
+
+------------------------------------------------------------------------
+
+Zgodnie z opisaną metodologią, w pierwszym kroku dokonano eliminacji wybranych cech diagnostycznych ze względu na kryterium współczynnika zmienności. Jako wartość progową V\* ustalono 10%. Dla każdego roku zmienne X4 oraz X5 przyjęły wartości poniżej V\*, zatem zostały wykluczone z dalszych obliczeń.
+
+Kolejno, przeanalizowano korelację między poszczególnymi zmiennymi w każdym roku. W każdym okresie wyeliminowano zmienne X2 i X8, gdyż ich zależności z innymi zmiennymi były bardzo silne. Dodatkowo w latach 2012, 2014 i 2016 wykluczono zmienną x6, ponieważ jej współczynnik korelacji z pozostałymi cechami również był dużo wyższy niż innych zmiennych. W badaniu pozostały zatem zmienne X1, X3, X6, X7, X9, X10 w każdym analizowanym okresie oaz dodatkowo zmienna X6 w latach 2018 i 2020.
+
+Następnie zastosowano metodę sum standaryzowanych, uprzednio zamieniając zmienne o charakterze destymulant - X6, X7, X9 i X10 - w stymulanty. Kolejno wyznaczono wartość minimalną i maksymalną dla każdej zmiennej, obliczono wartość pi oraz za pomocą wzoru obliczono wartość miar rozwoju. Tabela 2 zawiera obliczone wartości miar rozwoju dla poszczególnych krajów w wyznaczonych latach, które pozwalają na uszeregowanie krajów od najsłabiej rozwiniętego pod względem sytuacji mieszkaniowej do najlepiej rozwiniętego.
+
+**Tabela 2. Miary rozwoju dla poszczegolnych panstw**
+
+|          | 2012   | 2014   | 2016   | 2018   | 2020   |
+|----------|--------|--------|--------|--------|--------|
+| Węgry    | 0,2136 | 0,2249 | 0,3095 | 0,3067 | 0,4153 |
+| Polska   | 0,4681 | 0,4918 | 0,5407 | 0,4477 | 0,4529 |
+| Słowacja | 0,7267 | 0,6758 | 0,7203 | 0,6615 | 0,6332 |
+| Czechy   | 0,6097 | 0,5959 | 0,6218 | 0,6327 | 0,6382 |
+| Francja  | 0,6210 | 0,6343 | 0,6244 | 0,6364 | 0,5051 |
+| Holandia | 0,4648 | 0,4462 | 0,5352 | 0,6032 | 0,6145 |
+| Dania    | 0,4001 | 0,3867 | 0,3906 | 0,4408 | 0,4009 |
+| Norwegia | 0,8764 | 0,9018 | 0,8509 | 0,8113 | 0,8122 |
+
+W celu wizualizacji otrzymanych wyników stworzono poniższy wykres. 
+![](/Users/48733/Desktop/miary.png)
+
+Przedstawione wyniki wyraźnie wskazują, iż norweski rynek nieruchomości przoduje pod względem poziomu analizowanego zjawiska. Kolejno za Norwegią w badanym okresie plasowała się Słowacja, a w 2020 roku z niewielką przewagą Czechy. Na trzecim miejscu w każdym roku znalazła się Francja,a następnie Czechy, Dania, Holandia, Polska i Węgry, które odniosły najmniejszą wartość miary rozwoju w każdym badanym roku. 
+
+Podsumowując, najlepszą sytuacją mieszkaniowa charakteryzuje się Norwegia - rynek charakteryzuje się wysokim standardem (niskie wartości X9 i X10), dużą powierzchnią mieszkaniową przypadającą na 1 osobę (X6) oraz najwyższą wartością PKB per capita. Za Norwegią uplasowała się Słowacja, Francja, Czechy, z kolei gorsza sytuacja mieszkaniowa jest w Holandii, Danii i Polsce, a najgorsza na Węgrzech. Można zaobserwować, iż kraje uchodzące za bardziej rozwinięte (Holandia, Dania) znajdują się na niższych pozycjach w rankingu niż kraje dopiero rozwijające się. Wskazuje to, iż pomimo wysokiego poziomu rozowju gospodarczego, sytuacja mieszkaniowa społeczeństwa tych krajów nie należy do najlepszych i powinna ulec poprawie.
+
+# [Źródła]{style="font-family:Calibri"}
+
+------------------------------------------------------------------------
+J. Dziechciarz, *Ekonometria. Metody, przykłady, zadania, Wydawnictwo Akademii Ekonomicznej im. Oskara Langego we Wrocławiu*, Wrocław 2003, s. 287 - 291
+
+W. N. Venables, D. M. Smith and the R Core Team, *An Introduction to R*, s.26-27, 40, 48
+https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf?fbclid=IwAR2LyoWZFCQK-00k9ztgbDDtKuoW9ypVaNPEYm6k-5ZRQ102CTbfF2MyP38,  (data dostępu: 13.05.2022)
+
+https://stackoverflow.com/questions/22002838/same-function-over-multiple-data-frames-in-r (data dostępu: 13.05.2022)
+
+https://stackoverflow.com/questions/39163671/applying-a-function-to-a-list-of-data-frames-in-r (data dostępu: 13.05.2022)
+
+https://swcarpentry.github.io/r-novice-inflammation/02-func-R/ (data dostępu: 13.05.2022)
+
+https://www.analyticsvidhya.com/blog/2021/01/correlation-analysis-using-r/ (data dostępu: 13.05.2022)
+
+https://www.datasciencemadesimple.com/get-standard-deviation-of-a-column-in-r-2/ (data dostępu: 13.05.2022)
+
+https://www.datamentor.io/r-programming/if-else-statement/ (data dostępu: 11.05.2022)
+
+https://statisticsglobe.com/r-is-null-function/ (data dostępu: 11.05.2022)
+
+https://www.geeksforgeeks.org/adding-elements-in-a-vector-in-r-programming-append-method/ (data dostępu: 11.05.2022)
+
+https://www.datacamp.com/tutorial/tutorial-on-loops-in-r (data dostępu: 11.05.2022)
