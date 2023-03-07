@@ -1,8 +1,3 @@
-'''{r, echo = FALSE}
-knitr: :opts_chunk$set(
-  fig.path = "README_figs/README-"
-)
-'''
 ---
 title: 'Projekt zaliczeniowy - Metody analizy danych finansowych/Wprowadzenie do R
   i Python  '
