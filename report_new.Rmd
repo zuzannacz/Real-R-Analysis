@@ -1,6 +1,5 @@
 ---
-title: 'Projekt zaliczeniowy - Metody analizy danych finansowych/Wprowadzenie do R
-  i Python  '
+title: 'Metody analizy danych finansowych/Wprowadzenie do R'
 author: "Zuzanna Czerny"
 output:
   html_document: default
